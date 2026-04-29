@@ -1,132 +1,273 @@
-# 🧹 Sales Data Cleaning — Python & Pandas
+🧹 Sales Data Cleaning — Python & Pandas
 
-> A complete, step-by-step data wrangling project on a real-world food-service sales dataset — built with Python, Pandas, and Google Colab.
+A complete end-to-end data wrangling project on a real-world food-service sales dataset using Python and Pandas in Google Colab.
 
-<br/>
+📊 Dataset
 
-## 🔗 Project Files
+File: Sales-Data-Analysis.xlsxPeriod: November 7 – December 29, 2022Business: Food-service chain across 5 European cities (London, Madrid, Lisbon, Berlin, Paris)
 
-<table>
-  <tr>
-    <td align="center" width="50%">
-      <a href="https://github.com/Mdkamrulislam54/Sales-Data-Cleaning-in-Python/blob/e18cf7b76cb2906e0d7810ad7aec312a7d33059e/Data_Cleaning.ipynb">
-        <img src="https://img.shields.io/badge/📓%20View%20Notebook-Data__Cleaning.ipynb-blue?style=for-the-badge&logo=jupyter&logoColor=white" alt="View Notebook"/>
-      </a>
-      <br/><sub>Full cleaning code — 9 steps, syntax-highlighted</sub>
-    </td>
-    <td align="center" width="50%">
-      <a href="https://github.com/Mdkamrulislam54/Sales-Data-Cleaning-in-Python/blob/6ade69dbc914e449a3710b12add806ef10245afe/Sales-Data-Analysis.xlsx">
-        <img src="https://img.shields.io/badge/📊%20View%20Dataset-Sales--Data--Analysis.xlsx-217346?style=for-the-badge&logo=microsoft-excel&logoColor=white" alt="View Dataset"/>
-      </a>
-      <br/><sub>Raw Excel file — 262 rows × 10 columns</sub>
-    </td>
-  </tr>
-</table>
+Raw rows: 262
 
-<br/>
+Clean rows: 254
 
-## 🚀 Open Directly in Google Colab
+Columns: 9
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Mdkamrulislam54/Sales-Data-Cleaning-in-Python/blob/e18cf7b76cb2906e0d7810ad7aec312a7d33059e/Data_Cleaning.ipynb)
+Date range: 53 distinct days
 
-> **How to run:**
-> 1. Click the badge above → opens in Google Colab instantly
-> 2. Upload [`Sales-Data-Analysis.xlsx`](https://github.com/Mdkamrulislam54/Sales-Data-Cleaning-in-Python/blob/6ade69dbc914e449a3710b12add806ef10245afe/Sales-Data-Analysis.xlsx) to your Colab session
-> 3. `Runtime → Run all` — done ✅
+🔧 Cleaning Steps
 
----
+Step 1 — Import Libraries
 
-## 📊 Dataset Overview
+pandas for data manipulation
 
-| Property | Detail |
-|----------|--------|
-| **File** | [`Sales-Data-Analysis.xlsx`](https://github.com/Mdkamrulislam54/Sales-Data-Cleaning-in-Python/blob/6ade69dbc914e449a3710b12add806ef10245afe/Sales-Data-Analysis.xlsx) |
-| **Period** | November 7 – December 29, 2022 |
-| **Business** | Food-service chain — 5 European cities |
-| **Cities** | London · Madrid · Lisbon · Berlin · Paris |
-| **Raw rows** | 262 |
-| **Clean rows** | **254** |
-| **Columns** | 10 raw → 9 clean |
+matplotlib and seaborn for visualisation
 
----
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 
-## 🔧 What Was Cleaned
+Step 2 — Load Dataset & Inspect
 
-> Full code walkthrough → [`Data_Cleaning.ipynb`](https://github.com/Mdkamrulislam54/Sales-Data-Cleaning-in-Python/blob/e18cf7b76cb2906e0d7810ad7aec312a7d33059e/Data_Cleaning.ipynb)
+Read Excel file
 
-| # | Issue Found | Fix Applied |
-|:-:|-------------|-------------|
-| 1 | Blank column `Unnamed: 0` — 100% null | `df.drop(columns='Unnamed: 0')` |
-| 2 | Real headers buried in row 0 | `df.columns = df.loc[0]` → drop row 0 |
-| 3 | Manager names with irregular whitespace (14 apparent → 5 real) | `.str.strip().str.replace(r'\s+', ' ', regex=True)` |
-| 4 | 4 fully identical duplicate rows | `df.drop_duplicates()` |
-| 5 | 3 rows with prices inflated ~10× (data-entry errors) | Manual inspection + `df.drop([65, 66, 69])` |
-| 6 | All columns stored as `object` dtype | Cast → `int64` / `float64` / `datetime64[ns]` |
+Initial inspection: 262 rows × 10 columns, all object dtype
 
----
+First column (Unnamed: 0) is entirely null
 
-## 📁 Project Structure
+data = pd.read_excel('Sales-Data-Analysis.xlsx')
+data.info()
 
-```
-Sales-Data-Cleaning-in-Python/
-│
-├── 📓 Data_Cleaning.ipynb        ← Main notebook (open in Colab)
-├── 📊 Sales-Data-Analysis.xlsx   ← Raw dataset
-├── requirements.txt              ← Python dependencies
-└── README.md
-```
+Step 3 — Drop Blank Column
 
----
+Unnamed: 0 dropped → 9 columns remain
 
-## 🛠️ Tech Stack
+data.drop(columns='Unnamed: 0', inplace=True)
 
-![Python](https://img.shields.io/badge/Python-3.x-3776AB?style=flat-square&logo=python&logoColor=white)
-![Pandas](https://img.shields.io/badge/Pandas-≥1.5-150458?style=flat-square&logo=pandas&logoColor=white)
-![Matplotlib](https://img.shields.io/badge/Matplotlib-≥3.5-11557c?style=flat-square)
-![Seaborn](https://img.shields.io/badge/Seaborn-≥0.12-4c72b0?style=flat-square)
-![Colab](https://img.shields.io/badge/Google%20Colab-notebook-F9AB00?style=flat-square&logo=google-colab&logoColor=white)
+Step 4 — Fix Column Headers
 
-```bash
+Real headers stored in row 0
+
+Promote row 0 as column names, then drop it
+
+data.columns = data.loc[0]
+data.drop(0, inplace=True)
+
+Step 5 — Normalise Manager Column
+
+14 apparent values due to irregular whitespace → reduced to 5 unique managers
+
+data['Manager'] = data['Manager'].str.strip().str.replace(r'\s+', ' ', regex=True)
+
+Step 6 — Remove Exact Duplicate Rows
+
+4 fully identical rows removed
+
+data.drop_duplicates(inplace=True)
+
+Step 7 — Detect & Drop Outlier Prices
+
+3 rows with ~10× inflated prices dropped after manual inspection
+
+data.drop([65, 66, 69], inplace=True)
+
+Step 8 — Fix Column Data Types
+
+Cast columns to correct types
+
+data['Order ID'] = data['Order ID'].astype(int)
+data['Price'] = data['Price'].astype(float)
+data['Quantity'] = data['Quantity'].astype(float).round().astype(int)
+
+Step 9 — Parse Date Column
+
+Convert Date to datetime64
+
+data['Date'] = pd.to_datetime(data['Date'])
+
+📋 Cleaning Summary
+
+Step
+
+Action
+
+Before
+
+After
+
+Key Method
+
+1
+
+Import libraries
+
+—
+
+—
+
+import pandas
+
+2
+
+Load dataset
+
+—
+
+262 rows × 10 cols
+
+pd.read_excel()
+
+3
+
+Drop blank column
+
+10 cols
+
+9 cols
+
+df.drop()
+
+4
+
+Fix column headers
+
+Unnamed: 1 … 9
+
+Proper names
+
+df.columns = df.loc[0]
+
+5
+
+Normalise Manager
+
+14 unique
+
+5 unique
+
+.str.strip().replace()
+
+6
+
+Remove duplicates
+
+261 rows
+
+257 rows
+
+df.drop_duplicates()
+
+7
+
+Remove outlier rows
+
+257 rows
+
+254 rows
+
+df.drop([65,66,69])
+
+8
+
+Fix data types
+
+all object
+
+int/float/object
+
+.astype() / .round()
+
+9
+
+Parse dates
+
+object
+
+datetime64[ns]
+
+pd.to_datetime()
+
+📁 Project Files
+
+📊 Sales Dataset: Sales-Data-Analysis.xlsx
+
+📝 Data Cleaning Notebook: Data_Cleaning.ipynb
+
+🚀 Getting Started
+
+Run in Google Colab
+
+
+
+Upload Sales-Data-Analysis.xlsx to your Colab session
+
+Open Data_Cleaning.ipynb
+
+Run all cells (Runtime → Run all)
+
+Run Locally
+
+# Clone the repo
+git clone https://github.com/your-username/sales-data-cleaning.git
+cd sales-data-cleaning
+
+# Install dependencies
 pip install -r requirements.txt
-```
 
----
+# Launch Jupyter
+jupyter notebook Data_Cleaning.ipynb
 
-## 📋 Final Clean Schema
+🛠️ Libraries Used
 
-```
-Column           dtype              Notes
-─────────────────────────────────────────────────────────────────
-Order ID         int64              Unique per order
-Date             datetime64[ns]     Nov 7 – Dec 29, 2022
-Product          object             5 categories
-Price            float64            USD, 7 distinct price points
-Quantity         int64              Units sold
-Purchase Type    object             Online / In-store / Drive-thru
-Payment Method   object             Gift Card / Credit Card / Cash
-Manager          object             5 managers (1 per city)
-City             object             London, Madrid, Lisbon, Berlin, Paris
-```
+Library
 
----
+Version
 
-## 💡 Key Learnings
+Purpose
 
-- **Structural issues first** — shifted headers and blank columns must be fixed before anything else
-- **Whitespace is invisible and dangerous** — the same manager appeared as 14 unique values
-- **Two-pass duplicate detection** — exact row duplicates, then same-key / different-value duplicates
-- **Type conversion order matters** — `object → float → round → int` avoids floating-point remnants
+pandas
 
----
+≥ 1.5
 
-## 🔗 Connect & Contribute
+Data loading, cleaning, transformation
 
-Found an improvement? Feel free to **fork**, open a **PR**, or drop a ⭐ if this helped you!
+matplotlib
 
----
+≥ 3.5
 
-<p align="center">
-  <i>Cleaned with ❤️ using Python 3 · Pandas · Google Colab</i><br/>
-  <a href="https://github.com/Mdkamrulislam54/Sales-Data-Cleaning-in-Python/blob/e18cf7b76cb2906e0d7810ad7aec312a7d33059e/Data_Cleaning.ipynb">📓 Notebook</a> &nbsp;•&nbsp;
-  <a href="https://github.com/Mdkamrulislam54/Sales-Data-Cleaning-in-Python/blob/6ade69dbc914e449a3710b12add806ef10245afe/Sales-Data-Analysis.xlsx">📊 Dataset</a>
-</p>
+Visualisation
+
+seaborn
+
+≥ 0.12
+
+Statistical plots
+
+openpyxl
+
+≥ 3.0
+
+Reading .xlsx files
+
+📋 Final Data Schema
+
+Order ID        int64          — Unique order identifier
+Date            datetime64[ns] — Order date
+Product         object         — 5 categories: Fries, Burgers, Beverages, Chicken Sandwiches, Sides & Other
+Price           float64        — Item price in USD
+Quantity        int64          — Units sold
+Purchase Type   object         — Online / In-store / Drive-thru
+Payment Method  object         — Gift Card / Credit Card / Cash
+Manager         object         — 5 managers across 5 cities
+City            object         — London, Madrid, Lisbon, Berlin, Paris
+
+💡 Key Learnings
+
+Structural issues (shifted headers, blank columns) must be resolved before any other cleaning
+
+Whitespace normalisation is critical for text columns — same person can appear as multiple unique values
+
+Duplicate detection should be done in two passes: exact row duplicates, then domain-key duplicates
+
+Type conversion order matters — float → round → int avoids data loss
+
+Cleaned with ❤️ using Python 3 · Pandas · Google Colab
