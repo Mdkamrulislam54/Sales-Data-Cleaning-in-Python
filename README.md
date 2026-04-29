@@ -6,7 +6,7 @@ A complete data wrangling project on a real-world food-service sales dataset usi
 
 ## 📊 Dataset
 
-**File:** `Sales-Data-Analysis.xlsx`  
+**File:** `[Sales-Data-Analysis.xlsx`](https://github.com/Mdkamrulislam54/Sales-Data-Cleaning-in-Python/blob/6ade69dbc914e449a3710b12add806ef10245afe/Sales-Data-Analysis.xlsx)  
 **Period:** November 7 – December 29, 2022  
 **Business:** Food-service chain across 5 European cities (London, Madrid, Lisbon, Berlin, Paris)
 
